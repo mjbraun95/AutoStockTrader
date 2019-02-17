@@ -1,0 +1,31 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "6d9fa6f73a52daf38b7752ea432593c32d6ae0a60568e017cf5ae26b30063f52"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "2.7"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "backtrader": {
+            "hashes": [
+                "sha256:0f160620e45bacc1f459c92dfbab663759b70026676513da8a437fdfe73d10ec"
+            ],
+            "index": "pypi",
+            "version": "==1.9.70.122"
+        },
+        "ibpy2": {
+            "file": "https://github.com/blampe/IbPy/archive/master.zip"
+        }
+    },
+    "develop": {}
+}
