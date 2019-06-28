@@ -82,7 +82,7 @@ class cellEditor:
     #Value change functions
     def changeCellValue(self,text):
         self.cell.value = text
-        self.saveToDistribution()
+        # self.saveToDistribution()
         if (debug == True):
             self.printCellValue()
 
@@ -151,6 +151,7 @@ print("Done giving variable names to each sheet!")
 print("\nUpdating DistributionTemplateSheet...")
 # Input o/h/l/c/a/v coordinate values
 initRow = 7
+dateColumn = 65
 openColumn = 66
 highColumn = 67
 lowColumn = 68
@@ -158,15 +159,18 @@ closeColumn = 69
 adjCloseColumn = 70
 volumeColumn = 71
 
-openEditor = cellEditor(initRow,openColumn,DistributionTemplateTitle,Distribution1)
-highEditor = cellEditor(initRow,highColumn,DistributionTemplateTitle,Distribution1)
-lowEditor = cellEditor(initRow,lowColumn,DistributionTemplateTitle,Distribution1)
-closeEditor = cellEditor(initRow,closeColumn,DistributionTemplateTitle,Distribution1)
-adjCloseEditor = cellEditor(initRow,adjCloseColumn,DistributionTemplateTitle,Distribution1)
-volumeEditor = cellEditor(initRow,volumeColumn,DistributionTemplateTitle,Distribution1)
+dateEditor = cellEditor(initRow,dateColumn,Sheet1,Distribution1)
+openEditor = cellEditor(initRow,openColumn,Sheet1,Distribution1)
+highEditor = cellEditor(initRow,highColumn,Sheet1,Distribution1)
+lowEditor = cellEditor(initRow,lowColumn,Sheet1,Distribution1)
+closeEditor = cellEditor(initRow,closeColumn,Sheet1,Distribution1)
+adjCloseEditor = cellEditor(initRow,adjCloseColumn,Sheet1,Distribution1)
+volumeEditor = cellEditor(initRow,volumeColumn,Sheet1,Distribution1)
 
+numRows = int(input("Write to how many rows?"))
 currentRow = initRow
-while currentRow < 101:
+while currentRow < numRows:
+    dateEditor.changeCellValue(dateEditor.coordinates)
     openEditor.changeCellValue(openEditor.coordinates)
     highEditor.changeCellValue(highEditor.coordinates)
     lowEditor.changeCellValue(lowEditor.coordinates)
@@ -185,8 +189,9 @@ while currentRow < 101:
     volumeEditor.changeRow(currentRow)
     print("Done row {}!".format(currentRow))
     
-print("Program executed successfully! :)")
-    
+print("Program executed successfully! :) Saving...")
+openEditor.saveToDistribution()
+print("Saved!")
 
 
 
