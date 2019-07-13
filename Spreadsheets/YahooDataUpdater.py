@@ -4,6 +4,7 @@ from openpyxl.styles import colors
 from openpyxl.cell import Cell
 from openpyxl.utils import get_column_letter
 import datetime
+import YahooScraper
 
 debug = True
 
@@ -30,6 +31,8 @@ excelFile = input("Enter save name for spreadsheet (default is 'Test1.xlsx'): ")
 if excelFile == "" or excelFile == " ":
     excelFile = "Test1.xlsx"
 # excelDirectory = "C:\Users\mattb\Dropbox\Github Repositories\AutoStockTrader\Spreadsheets\Test1.xlsx" 
+
+
 
 class cellEditor:
     def __init__(self,row,column,sheet,distribution):
@@ -169,18 +172,27 @@ volumeEditor = cellEditor(initRow,volumeColumn,Sheet1,Distribution1)
 
 numRows = int(input("Write to how many rows?"))
 currentRow = initRow
+
+#Grabs Finance Table Data from the YahooScraper.py file
+yahooFinanceDataRows = YahooScraper.grabYahooFinanceDataRows()
+
+
+# currentRow = 0
 while currentRow < numRows:
-    dateEditor.changeCellValue(dateEditor.coordinates)
-    openEditor.changeCellValue(openEditor.coordinates)
-    highEditor.changeCellValue(highEditor.coordinates)
-    lowEditor.changeCellValue(lowEditor.coordinates)
-    closeEditor.changeCellValue(closeEditor.coordinates)
-    adjCloseEditor.changeCellValue(adjCloseEditor.coordinates)
-    volumeEditor.changeCellValue(volumeEditor.coordinates)
+    dateEditor.changeCellValue(yahooFinanceDataRows[currentRow-initRow][0])
+    openEditor.changeCellValue(yahooFinanceDataRows[currentRow-initRow][1])
+    highEditor.changeCellValue(yahooFinanceDataRows[currentRow-initRow][2])
+    lowEditor.changeCellValue(yahooFinanceDataRows[currentRow-initRow][3])
+    closeEditor.changeCellValue(yahooFinanceDataRows[currentRow-initRow][4])
+    adjCloseEditor.changeCellValue(yahooFinanceDataRows[currentRow-initRow][5])
+    volumeEditor.changeCellValue(yahooFinanceDataRows[currentRow-initRow][6])
+    print("yahooFinanceDataRows[0][0]: {}".format(yahooFinanceDataRows[0][0]))
+    # del yahooFinanceDataRows[currentRow-initRow][:]
 
     currentRow += 1
 
     # Update the cells' rows
+    dateEditor.changeRow(currentRow)
     openEditor.changeRow(currentRow)
     highEditor.changeRow(currentRow)
     lowEditor.changeRow(currentRow)
