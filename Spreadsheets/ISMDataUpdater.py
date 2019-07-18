@@ -121,7 +121,7 @@ Sectors = PMIExcelFile.worksheets[1]
 # print("IndustryComments: {}".format(IndustryComments))
 
 print("\nGiving sheet variables to each sheet...")
-SectorsSheet = PMIExcelFile["Sheet2"]
+SectorsSheet = PMIExcelFile["PMITemplate"]
 print("Done giving sheet variables to the sheet!")
 
 # print("\nUpdating DistributionTemplateSheet...")
