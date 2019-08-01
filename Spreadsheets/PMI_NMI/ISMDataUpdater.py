@@ -25,6 +25,9 @@ green = (0,255,0)
 blue = (0,0,255)
 grey = (128,128,128)
 
+IndustryPMIRankingsInitColumn = 71
+IndustryNMIRankingsInitColumn = 70
+IndustryRankingsInitRow = 5
 
 debug = True
 
@@ -38,12 +41,12 @@ PMI_IndustriesArray = ["(Machinery)","(Computer & Electronic Products)","(Paper 
                     "(Food, Beverage & Tobacco Products)","(Furniture & Related Products)",
                     "(Transportation Equipment)","(Chemical Products)","(Fabricated Metal Products)",
                     "(Electrical Equipment, Appliances & Components)","(Textile Mills)","(Wood Products)"]
-NMI_IndustriesArray = ["(Retail Trade)","(Utilities)","(Arts, Entertainment Recreation)",
-                    "(Other Services)","(Healthcare and Social Assistance)","(Food and Accomodations)",
-                    "(Finance and Insurance)","(Real Estate, Renting and Leasing)",
-                    "(Transport and Warehouse)","(Mining)","(Wholesale)","(Public Admin)",
-                    "(Professional, Science and Technology Services)","(Information)","(Education)",
-                    "(Management)","(Construction)","(Agriculture, Forest, Fishing and Hunting)"]
+NMI_IndustriesArray = ["(Retail Trade)","(Utilities)","(Arts, Entertainment & Recreation)",
+                    "(Other Services)","(Health Care & Social Assistance)","(Accommodation & Food Services)",
+                    "(Finance & Insurance)","(Real Estate, Rental & Leasing)",
+                    "(Transportation & Warehousing)","(Mining)","(Wholesale Trade)","(Public Administration)",
+                    "(Professional, Scientific & Technical Services)","(Information)","(Educational Services)",
+                    "(Management of Companies & Support Services)","(Construction)","(Agriculture, Forestry, Fishing & Hunting)"]
 PMI_SectorsArray = ["NEW ORDERS","PRODUCTION","EMPLOYMENT","SUPPLIER DELIVERIES","INVENTORIES",
                     "CUSTOMER INVENTORIES","PRICES","BACKLOG OF ORDERS","EXPORTS","IMPORTS"]
 NMI_SectorsArray = ["ISM NON-MANUFACTURING","BUSINESS ACTIVITY","NEW ORDERS","EMPLOYMENT","SUPPLIER DELIVERIES","INVENTORIES",
@@ -152,21 +155,7 @@ class cellEditor:
         return 0
 
     def updateRankings( self ):
-        IndustryPMIRankingsInitColumn = 71
-        IndustryNMIRankingsInitColumn = 70
-        IndustryRankingsInitRow = 5
         print("Updating PMI rankings...")
-        ISM_Type = ISMScraper.grabType(ISM_Page)
-        if ISM_Type == "PMI":
-            thisInitColumn = IndustryPMIRankingsInitColumn
-            ISM_RankingListArray = [None] * 10
-            thisSectorsArray = PMI_SectorsArray
-            thisIndustryArray = PMI_IndustriesArray
-        elif ISM_Type == "NMI":
-            thisInitColumn = IndustryNMIRankingsInitColumn
-            ISM_RankingListArray = [None] * 11
-            thisSectorsArray = NMI_SectorsArray
-            thisIndustryArray = NMI_IndustriesArray
         rankDictionaryArray = ISMScraper.grabISMrankings( ISM_Page )
 
         self.column = thisInitColumn
@@ -208,20 +197,36 @@ PMI_Editor = cellEditor( Sectors_xlsx, 1 )
 NMI_Editor = cellEditor( Sectors_xlsx, 2 )
 
 # URL = input("Enter URL Here: ")
-ISM_Page = requests.get("https://www.instituteforsupplymanagement.org/ISMReport/MfgROB.cfm?SSO=1") #PMI
+# ISM_Page = requests.get("https://www.instituteforsupplymanagement.org/ISMReport/MfgROB.cfm?SSO=1") #PMI
 # ISM_Page = requests.get("https://www.instituteforsupplymanagement.org/ISMReport/NonMfgROB.cfm?SSO=1") #NMI
+ISM_URL = input("Input ISM Report URL here: ")
+ISM_Page = requests.get( ISM_URL )
+
+ISM_Type = ISMScraper.grabType( ISM_Page )
+if ISM_Type == "PMI":
+    thisEditor = PMI_Editor
+    thisInitColumn = IndustryPMIRankingsInitColumn
+    ISM_RankingListArray = [None] * 10
+    thisSectorsArray = PMI_SectorsArray
+    thisIndustryArray = PMI_IndustriesArray
+elif ISM_Type == "NMI":
+    thisEditor = NMI_Editor
+    thisInitColumn = IndustryNMIRankingsInitColumn
+    ISM_RankingListArray = [None] * 11
+    thisSectorsArray = NMI_SectorsArray
+    thisIndustryArray = NMI_IndustriesArray
 if ISM_Page.status_code != 200:
-    print("ERROR: status code: {}".format(ISM_Page.status_code))
+    print("ERROR: status code: {}".format( ISM_Page.status_code ) )
     exit()
 else:
     print("Request successful!")
 
 command = ""
-PMI_Editor.updateRankings( )
-# while command != 'q':
-#     command = input("What would you like to do? ('q'=quit, 'uc'=Update Comments, 'ur'=Update Rankings, ")
-#     if command == 'uc':
-#         PMI_Editor.updateComments( PMI_IndustriesArray )
-#     elif command == 'ur':
-#         PMI_Editor.updateRankings( PMI_IndustriesArray )
+# thisEditor.updateRankings( )
+while command != 'q':
+    command = input("What would you like to update on {} sheet? ('q'=quit, 'uc'=Update Comments, 'ur'=Update Rankings): ".format( ISM_Type ) )
+    if command == 'uc':
+        thisEditor.updateComments( thisIndustryArray )
+    elif command == 'ur':
+        thisEditor.updateRankings(  )
 print("Exiting")

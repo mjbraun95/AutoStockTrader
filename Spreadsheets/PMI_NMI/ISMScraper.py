@@ -9,12 +9,12 @@ PMI_IndustriesArray = ["Machinery","Computer & Electronic Products","Paper Produ
                     "Food, Beverage & Tobacco Products","Furniture & Related Products",
                     "Transportation Equipment","Chemical Products","Fabricated Metal Products",
                     "Electrical Equipment, Appliances & Components","Textile Mills","Wood Products"]
-NMI_IndustriesArray = ["Retail Trade","Utilities","Arts, Entertainment Recreation",
-                    "Other Services","Healthcare and Social Assistance","Food and Accomodations",
-                    "Finance and Insurance","Real Estate, Renting and Leasing",
-                    "Transport and Warehouse","Mining","Wholesale","Public Admin",
-                    "Professional, Science and Technology Services","Information","Education",
-                    "Management","Construction","Agriculture, Forest, Fishing and Hunting"]
+NMI_IndustriesArray = ["Retail Trade","Utilities","Arts, Entertainment & Recreation",
+                    "Other Services","Health Care & Social Assistance","Accommodation & Food Services",
+                    "Finance & Insurance","Real Estate, Rental & Leasing",
+                    "Transportation & Warehousing","Mining","Wholesale Trade","Public Administration",
+                    "Professional, Scientific & Technical Services","Information","Educational Services",
+                    "Management of Companies & Support Services","Construction","Agriculture, Forestry, Fishing & Hunting"]
 PMI_SectorsArray = ["NEW ORDERS","PRODUCTION","EMPLOYMENT","SUPPLIER DELIVERIES","INVENTORIES",
                     "CUSTOMER INVENTORIES","PRICES","BACKLOG OF ORDERS","EXPORTS","IMPORTS"]
 NMI_SectorsArray = ["ISM NON-MANUFACTURING","BUSINESS ACTIVITY","NEW ORDERS","EMPLOYMENT","SUPPLIER DELIVERIES","INVENTORIES",
@@ -73,22 +73,33 @@ def grabISMrankings(ISM_Page):
     for mb3_i, mb3 in enumerate(mb3_Array):
         found = False
         # print("{}.find({}): {}".format( mb3.text, keyword, mb3.text.find(keyword)))
-        if (mb3.text.find("order") != -1 and mb3.text.find("report") != -1 and mb3.text.find("industries") != -1 and mb3.text.find(";") != -1 ):
+
+        print("'are:': {}".format(mb3.text.find("are:")))
+        print("'report': {}".format(mb3.text.find("report")))
+        print("'industries': {}".format(mb3.text.find("industries")))
+        print("';': {}".format(mb3.text.find(";")))
+
+        #
+        if (mb3.text.find("are:") != -1 and mb3.text.find("report") != -1 and mb3.text.find("industries") != -1 and mb3.text.find(";") != -1 ):
             rankTextArray.append(mb3.text)
             found = True
         if debug == True:
-            print("\nIn rankTextArray: {}\n{}".format( found, mb3.text ))
+            print("In rankTextArray: {}\n{}".format( found, mb3.text ))
     if grabType(ISM_Page) == "PMI":
         if len(rankTextArray) != 10:
             print("FATAL ERROR: PMI len(rankTextArray) = {}, should be 10! :(".format( len(rankTextArray) ) )
             exit()
         thisSectorsArray = PMI_SectorsArray
+        thisIndustriesArray = PMI_IndustriesArray
         
     elif grabType(ISM_Page) == "NMI":
         if len(rankTextArray) != 11:
             print("FATAL ERROR: NMI len(rankTextArray) = {}, should be 11! :(".format( len(rankTextArray) ) )
             exit()
         thisSectorsArray = NMI_SectorsArray
+        thisIndustriesArray = NMI_IndustriesArray
+
+    go = input("Press Enter to parse through rankTextArray")
 
     print("rankTextArray length: {}".format(len(rankTextArray)))
     for rankText in rankTextArray:
@@ -96,27 +107,24 @@ def grabISMrankings(ISM_Page):
         ISM_NegativeRankingList = []
         ISM_NeutralRankingList = []
         print("\n{}".format(rankText))
-        colons = [m.start() for m in re.finditer( ":", str(rankText) )]
-        firstRankMin = colons[0]
-        secondRankMin = colons[1]
+        IndustrySplitter = [m.start() for m in re.finditer( "report", str(rankText) )]
+        firstRankMin = IndustrySplitter[0]
+        secondRankMin = IndustrySplitter[1]
 
-        # thirdRankOrder = rankText[secondRankMin+1:].find(":")
         print("firstRankMin: {}".format(firstRankMin))
         print("secondRankMin: {}".format(secondRankMin))
-        # print("thirdRankOrder: {}".format(thirdRankOrder))
         positiveRankDictionary = {}
         negativeRankDictionary = {}
-        # ISM_NeutralRankingList = PMI_IndustriesArray
         subString1 = rankText[firstRankMin:secondRankMin]
         # print("----")
         # print("subString1: {}".format( subString1 ) )
-        for PMI_Industry in PMI_IndustriesArray:
-            if subString1.find(PMI_Industry) != -1:
-                positiveRankDictionary[PMI_Industry] = subString1.find( PMI_Industry )
+        for thisIndustry in thisIndustriesArray:
+            if subString1.find(thisIndustry) != -1:
+                positiveRankDictionary[thisIndustry] = subString1.find( thisIndustry )
                 
             subString2 = rankText[secondRankMin:]
-            if subString2.find(PMI_Industry) != -1:
-                negativeRankDictionary[PMI_Industry] = subString2.find( PMI_Industry )
+            if subString2.find(thisIndustry) != -1:
+                negativeRankDictionary[thisIndustry] = subString2.find( thisIndustry )
                 
         sortedPositiveRankList = sorted( positiveRankDictionary.items(), key=lambda kv: kv[1])
         sortedNegativeRankList = sorted( negativeRankDictionary.items(), key=lambda kv: kv[1])
@@ -126,7 +134,7 @@ def grabISMrankings(ISM_Page):
         debugRankList = False
 
         # ADD NEUTRAL INDUSTRIES TO ENTIRE ARRAY
-        for neutralIndustry in PMI_IndustriesArray:
+        for neutralIndustry in thisIndustriesArray:
             ISM_NeutralRankingList.append( neutralIndustry )
 
         # POSITIVE INDUSTRIES
@@ -169,9 +177,12 @@ def grabISMrankings(ISM_Page):
         print("ISM_NegativeRankingListArray[-1]: {}".format( ISM_NegativeRankingListArray[-1] ) )
         print(" ISM_NeutralRankingListArray[-1]: {}".format( ISM_NeutralRankingListArray[-1] ) )
         print("----")
+
+    print("len(rankTextArray): {}".format( len(rankTextArray) ) )
     finalRankDictionaryArray = [ dict() for x in range(len(rankTextArray) ) ] 
     
     for dictIndex, dictionary in enumerate(finalRankDictionaryArray):
+        print("dictIndex: {}".format(dictIndex))
         for industryIndex, industry in enumerate(ISM_PositiveRankingListArray[dictIndex]):
             dictionary[industry] = industryIndex + 1
 
@@ -183,15 +194,17 @@ def grabISMrankings(ISM_Page):
         ISM_NegativeRankingListArray[dictIndex].reverse()
         for industryIndex3, industry3 in enumerate(ISM_NegativeRankingListArray[dictIndex]):
             dictionary[industry3] = negativeOffset + industryIndex3 + 1
-
-        go = input("Press enter for dictionary {}".format(thisSectorsArray[dictIndex]))
-        print(dictionary)
-        print("")
+        try:
+            go = input("Press enter for dictionary {}".format(thisSectorsArray[dictIndex]))
+            print(dictionary)
+            print("")
+        except IndexError:
+            break
             
             
         
     return finalRankDictionaryArray
 
 if __name__ == "__main__":
-    # grabISMcomments("https://www.instituteforsupplymanagement.org/ISMReport/MfgROB.cfm?SSO=1")
-    grabISMrankings("https://www.instituteforsupplymanagement.org/ISMReport/MfgROB.cfm?SSO=1")
+    grabISMcomments("https://www.instituteforsupplymanagement.org/ISMReport/MfgROB.cfm?SSO=1")
+    # grabISMrankings("https://www.instituteforsupplymanagement.org/ISMReport/MfgROB.cfm?SSO=1")
