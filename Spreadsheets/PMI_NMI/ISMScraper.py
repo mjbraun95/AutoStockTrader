@@ -158,13 +158,13 @@ def grabSortedPosNegRankLists( ISM_Soup, p_mb3_Array_Filtered, thisIndustriesArr
 
 def grabRankingListArray( p_mb3_Array_Filtered, thisSectorsArray, thisIndustriesArray, sortedPositiveRankList, sortedNegativeRankList ):
     debug_grabRankingListArray = True
-    ISM_PositiveRankingList = []
-    ISM_NegativeRankingList = []
-    ISM_NeutralRankingList = []
     ISM_PositiveRankingListArray = []
     ISM_NegativeRankingListArray = []
     ISM_NeutralRankingListArray = []
     for p_mb3_FilteredIndex, p_mb3_FilteredText in enumerate( p_mb3_Array_Filtered ):
+        ISM_PositiveRankingList = []
+        ISM_NegativeRankingList = []
+        ISM_NeutralRankingList = []
 
         # ADD NEUTRAL INDUSTRIES TO ENTIRE ARRAY
         for thisIndustry in thisIndustriesArray:
@@ -178,8 +178,8 @@ def grabRankingListArray( p_mb3_Array_Filtered, thisSectorsArray, thisIndustries
             posStrR = quotes[1]
             posStr = str(positiveIndustry)[posStrL+1:posStrR]
 
-            if debug_grabRankingListArray == True:
-                print("posStr: {}".format( posStr ) )
+            # if debug_grabRankingListArray == True:
+            #     print("posStr: {}".format( posStr ) )
             ISM_PositiveRankingList.append( posStr )
 
             # Removes positives from neutral
@@ -193,8 +193,8 @@ def grabRankingListArray( p_mb3_Array_Filtered, thisSectorsArray, thisIndustries
             negStrR = quotes[1]
             negStr = str(negativeIndustry)[negStrL+1:negStrR]
 
-            if debug_grabRankingListArray == True:
-                print("negStr: {}".format( negStr ) )
+            # if debug_grabRankingListArray == True:
+            #     print("negStr: {}".format( negStr ) )
             ISM_NegativeRankingList.append( negStr )
 
             # Removes negatives from neutral
